@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>受迫振动振幅与驱动力频率关系分析系统</title>
-    <link rel="stylesheet" href="./styles.css?v=20260502-1" />
+    <title>光斑振动追踪系统</title>
+    <link rel="stylesheet" href="./styles.css?v=20260508-3" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <div>
-          <p class="kicker">Forced Vibration Analyzer</p>
-          <h1>受迫振动振幅与驱动力频率关系分析系统</h1>
+          <p class="kicker">Spot Vibration Tracking System</p>
+          <h1>光斑振动追踪系统</h1>
         </div>
         <div class="status-strip">
           <span id="cameraStatus" class="status-pill warn">摄像头待授权</span>
@@ -26,7 +26,7 @@
             <div class="block-head">
               <div>
                 <p class="section-label">音频发生器</p>
-                <h2><span class="phys">F</span> = <span id="frequencyReadout">5.00</span> Hz</h2>
+                <h2><span class="phys">f</span> = <span id="frequencyReadout">5.00</span> Hz</h2>
               </div>
               <button id="playToggle" class="icon-button primary" type="button" title="播放或停止声音">
                 <span id="playIcon">▶</span>
@@ -46,23 +46,23 @@
 
             <div id="preciseMode" class="mode-pane active">
               <div class="field">
-                <label for="preciseFrequency">频率 <span class="phys">F</span> (Hz)</label>
+                <label for="preciseFrequency">频率 <span class="phys">f</span> / Hz</label>
                 <input id="preciseFrequency" type="number" min="0" max="1000" step="0.01" value="5" />
               </div>
             </div>
 
             <div id="sliderMode" class="mode-pane">
               <div class="field">
-                <label for="sliderFrequency">频率 <span class="phys">F</span> 滑块 (1-1000 Hz)</label>
+                <label for="sliderFrequency">频率 <span class="phys">f</span> 滑块 (1-1000 Hz)</label>
                 <input id="sliderFrequency" type="range" min="1" max="1000" value="5" step="1" />
               </div>
             </div>
 
             <div id="sweepMode" class="mode-pane">
               <div class="sweep-grid">
-                <label><span>起始 <span class="phys">F</span></span><input id="sweepStart" type="number" value="0" min="0" step="0.1" /></label>
-                <label><span>峰值 <span class="phys">F</span></span><input id="sweepPeak" type="number" value="20" min="0" step="0.1" /></label>
-                <label><span>步进 <span class="phys">ΔF</span></span><input id="sweepStep" type="number" value="1" min="0.1" step="0.1" /></label>
+                <label><span>起始 <span class="phys">f</span></span><input id="sweepStart" type="number" value="0" min="0" step="0.1" /></label>
+                <label><span>峰值 <span class="phys">f</span></span><input id="sweepPeak" type="number" value="20" min="0" step="0.1" /></label>
+                <label><span>步进 <span class="phys">Δf</span></span><input id="sweepStep" type="number" value="1" min="0.1" step="0.1" /></label>
                 <label><span>间隔 <span class="phys">Δt</span></span><input id="sweepInterval" type="number" value="5" min="0.2" step="0.1" /></label>
               </div>
               <button id="sweepToggle" class="wide-button" type="button">启动自动扫频</button>
@@ -81,37 +81,18 @@
             </label>
           </section>
 
-          <section class="block record-block compact-block">
-            <p class="section-label">数据记录</p>
-            <div class="field">
-              <label for="sampleRate">采样率</label>
-              <select id="sampleRate">
-                <option value="0.2" selected>每 0.2 秒</option>
-                <option value="0.4">每 0.4 秒</option>
-                <option value="0.6">每 0.6 秒</option>
-                <option value="0.8">每 0.8 秒</option>
-                <option value="1">每 1 秒</option>
-              </select>
-            </div>
-            <div class="record-actions">
-              <button id="amplitudeRecord" type="button">记录当前振幅</button>
-              <button id="syncRecord" class="primary" type="button">同步记录</button>
-              <button id="clearData" type="button">清空</button>
-            </div>
-          </section>
-
           <section class="table-wrap" aria-label="数据表格">
             <table>
               <thead>
                 <tr>
                   <th>序号</th>
-                  <th>频率 <span class="phys">F</span> (Hz)</th>
-                  <th>振幅 <span class="phys">A</span> (cm)</th>
+                  <th>频率 <span class="phys">f</span> / Hz</th>
+                  <th>光斑振动幅度 <span class="phys">Δy</span> / cm</th>
                   <th>时间 <span class="phys">t</span> (s)</th>
                 </tr>
               </thead>
               <tbody id="dataBody">
-                <tr class="empty-row"><td colspan="4">等待记录数据</td></tr>
+                <tr class="empty-row"><td colspan="4">启动自动扫频后自动记录数据</td></tr>
               </tbody>
             </table>
           </section>
@@ -122,8 +103,8 @@
             <button id="calibrate" class="primary" type="button">绘制 1cm 标尺</button>
             <button id="resetTrack" type="button">重置轨迹</button>
             <div class="metric">
-              <span>当前振幅 <span class="phys">A</span></span>
-              <strong><span class="phys">A</span> = <span id="amplitudeReadout">0.000</span> cm</strong>
+              <span>当前上下振动幅度</span>
+              <strong><span id="amplitudeReadout">0.000</span> cm</strong>
             </div>
             <div class="metric">
               <span>像素比例</span>
@@ -148,7 +129,7 @@
               <strong id="centroidY">--</strong>
             </div>
             <div>
-              <span>像素振幅</span>
+              <span>像素上下振动幅度</span>
               <strong id="pixelAmplitude">0.0 px</strong>
             </div>
             <div>
@@ -161,8 +142,8 @@
         <aside class="panel chart-panel" aria-label="可视化绘图区">
           <div class="chart-head">
             <div>
-              <p class="section-label"><span class="phys">A</span>-<span class="phys">F</span> 图像</p>
-              <h2>受迫振动振幅与驱动力频率的关系</h2>
+              <p class="section-label"><span class="phys">Δy</span>-<span class="phys">f</span> 图像</p>
+              <h2>光斑上下振动幅度与驱动力频率的关系</h2>
             </div>
             <button id="drawChart" class="primary" type="button">绘图</button>
           </div>
@@ -170,13 +151,13 @@
             <canvas id="chartCanvas" width="900" height="620"></canvas>
           </div>
           <div class="chart-note">
-            <span>横轴：驱动力频率 <span class="phys">F</span> (Hz)</span>
-            <span>纵轴：受迫振动振幅 <span class="phys">A</span> (cm)</span>
+            <span>横轴：驱动力频率 <span class="phys">f</span> / Hz</span>
+            <span>纵轴：光斑振动幅度 <span class="phys">Δy</span> / cm</span>
           </div>
         </aside>
       </section>
     </main>
 
-    <script src="./app.js?v=20260502-1"></script>
+    <script src="./app.js?v=20260508-3"></script>
   </body>
 </html>

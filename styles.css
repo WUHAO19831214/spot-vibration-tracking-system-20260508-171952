@@ -121,7 +121,7 @@ input[type="range"] {
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 h1,
@@ -202,7 +202,7 @@ h2 {
 
 .control-panel {
   display: grid;
-  grid-template-rows: auto auto auto minmax(120px, 1fr);
+  grid-template-rows: auto auto minmax(180px, 1fr);
   gap: 8px;
   min-height: 0;
   padding: 8px;
@@ -309,16 +309,11 @@ h2 {
   margin-top: 7px;
 }
 
-.camera-actions,
-.record-actions {
+.camera-actions {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 6px;
   margin-top: 6px;
-}
-
-.record-actions {
-  grid-template-columns: 1fr 1fr auto;
 }
 
 .table-wrap {
@@ -575,10 +570,6 @@ video {
 
   .tracking-console {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .record-actions {
-    grid-template-columns: 1fr;
   }
 
   .chart-note {

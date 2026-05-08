@@ -19,10 +19,6 @@ const els = {
   cameraStatus: $("#cameraStatus"),
   trackStatus: $("#trackStatus"),
   scaleStatus: $("#scaleStatus"),
-  sampleRate: $("#sampleRate"),
-  amplitudeRecord: $("#amplitudeRecord"),
-  syncRecord: $("#syncRecord"),
-  clearData: $("#clearData"),
   dataBody: $("#dataBody"),
   calibrate: $("#calibrate"),
   resetTrack: $("#resetTrack"),
@@ -66,8 +62,7 @@ const state = {
   latestAmplitudeCm: 0,
   records: [],
   startedAt: performance.now(),
-  syncTimer: null,
-  isSyncRecording: false,
+  sweepDwell: null,
   resizeFrame: null,
   resizeObserver: null,
 };
@@ -107,6 +102,10 @@ function setMode(mode) {
   if (mode === "slider") setFrequency(Number(els.sliderFrequency.value));
   if (mode !== "sweep") stopSweep();
   scheduleCanvasResize();
+}
+
+function frequencyMatches(a, b) {
+  return Math.abs(Number(a) - Number(b)) < 1e-6;
 }
 
 function setFrequency(value) {
@@ -180,10 +179,13 @@ function startSweep() {
   const interval = Math.max(0.2, Number(els.sweepInterval.value) || 5);
 
   state.sweepDirection = 1;
+  clearData();
   setFrequency(start);
+  beginSweepDwell(start);
   els.sweepToggle.textContent = "停止自动扫频";
   els.sweepToggle.classList.add("primary");
   state.sweepTimer = window.setInterval(() => {
+    finalizeSweepDwell();
     let next = state.currentFrequency + step * state.sweepDirection;
     if (next >= peak) {
       next = peak;
@@ -194,6 +196,7 @@ function startSweep() {
       state.sweepDirection = 1;
     }
     setFrequency(next);
+    beginSweepDwell(next);
   }, interval * 1000);
 }
 
@@ -202,8 +205,63 @@ function stopSweep() {
     clearInterval(state.sweepTimer);
     state.sweepTimer = null;
   }
+  finalizeSweepDwell();
   els.sweepToggle.textContent = "启动自动扫频";
   els.sweepToggle.classList.remove("primary");
+}
+
+function beginSweepDwell(frequency) {
+  state.samplePoints = [];
+  state.sweepDwell = {
+    frequency,
+    yMin: Infinity,
+    yMax: -Infinity,
+    hasPoint: false,
+    startedAt: elapsedSeconds(),
+  };
+  updateAmplitude();
+}
+
+function updateSweepDwell(point) {
+  if (!state.sweepDwell) return;
+  state.sweepDwell.yMin = Math.min(state.sweepDwell.yMin, point.y);
+  state.sweepDwell.yMax = Math.max(state.sweepDwell.yMax, point.y);
+  state.sweepDwell.hasPoint = true;
+}
+
+function finalizeSweepDwell() {
+  const dwell = state.sweepDwell;
+  if (!dwell) return;
+  state.sweepDwell = null;
+  if (!dwell.hasPoint) {
+    return;
+  }
+  const pixelDelta = dwell.yMax - dwell.yMin;
+  const deltaCm = pixelDelta * (state.cmPerPixel || 0);
+  upsertSweepRecord({
+    frequency: dwell.frequency,
+    amplitude: deltaCm,
+    time: elapsedSeconds(),
+  });
+}
+
+function upsertSweepRecord(record) {
+  const existing = state.records.find((item) => frequencyMatches(item.frequency, record.frequency));
+  if (existing) {
+    if (record.amplitude > existing.amplitude) {
+      existing.amplitude = record.amplitude;
+      existing.time = record.time;
+    }
+  } else {
+    state.records.push({
+      index: state.records.length + 1,
+      frequency: record.frequency,
+      amplitude: record.amplitude,
+      time: record.time,
+    });
+  }
+  renderTable();
+  drawChart();
 }
 
 async function requestCamera(deviceId = "") {
@@ -436,6 +494,7 @@ function trackRedSpot() {
     state.trackedPoint = point;
     state.recentPoints.push(point);
     state.samplePoints.push(point);
+    updateSweepDwell(point);
     trimPoints();
     setStatus(els.trackStatus, "已锁定红色光斑", "live");
     els.centroidX.textContent = formatNumber(point.x, 1);
@@ -577,41 +636,10 @@ function drawCalibrationLine(ctx) {
   ctx.restore();
 }
 
-function recordSnapshot(includeFrequency) {
-  updateAmplitude();
-  const record = {
-    index: state.records.length + 1,
-    frequency: includeFrequency ? state.currentFrequency : null,
-    amplitude: state.latestAmplitudeCm,
-    time: elapsedSeconds(),
-  };
-  state.records.push(record);
-  state.samplePoints = [];
-  renderTable();
-  if (includeFrequency) drawChart();
-}
-
-function toggleSyncRecording() {
-  if (state.isSyncRecording) {
-    clearInterval(state.syncTimer);
-    state.syncTimer = null;
-    state.isSyncRecording = false;
-    els.syncRecord.textContent = "同步记录";
-    els.syncRecord.classList.add("primary");
-    return;
-  }
-  const sampleMs = Number(els.sampleRate.value) * 1000;
-  recordSnapshot(true);
-  state.syncTimer = window.setInterval(() => recordSnapshot(true), sampleMs);
-  state.isSyncRecording = true;
-  els.syncRecord.textContent = "停止同步";
-  els.syncRecord.classList.remove("primary");
-}
-
 function renderTable() {
   els.dataBody.innerHTML = "";
   if (!state.records.length) {
-    els.dataBody.innerHTML = '<tr class="empty-row"><td colspan="4">等待记录数据</td></tr>';
+    els.dataBody.innerHTML = '<tr class="empty-row"><td colspan="4">启动自动扫频后自动记录数据</td></tr>';
     return;
   }
   const fragment = document.createDocumentFragment();
@@ -631,6 +659,7 @@ function renderTable() {
 
 function clearData() {
   state.records = [];
+  state.sweepDwell = null;
   state.samplePoints = [];
   state.recentPoints = [];
   state.latestAmplitudeCm = 0;
@@ -696,16 +725,9 @@ function drawChart() {
     ctx.fillStyle = "#657184";
     ctx.font = "800 16px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("点击“同步记录”采集频率与振幅后绘图", plot.x + plot.width / 2, plot.y + plot.height / 2);
+    ctx.fillText("点击“启动自动扫频”采集频率与 Δy 后绘图", plot.x + plot.width / 2, plot.y + plot.height / 2);
     ctx.restore();
   }
-
-  ctx.save();
-  ctx.fillStyle = "#18212f";
-  ctx.font = "900 15px sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText("受迫振动振幅与驱动力频率的关系", width / 2, 22);
-  ctx.restore();
 }
 
 function niceMax(value) {
@@ -767,21 +789,20 @@ function drawChartGrid(ctx, plot, maxX, maxY) {
   ctx.fillText("O", plot.x - 7, plot.y + plot.height + 17);
   ctx.textAlign = "center";
   ctx.font = "italic 900 18px 'Times New Roman', serif";
-  ctx.fillText("F", plot.x + plot.width + 18, plot.y + plot.height + 17);
-  ctx.fillText("A", plot.x - 17, plot.y - 17);
+  ctx.fillText("f", plot.x + plot.width + 18, plot.y + plot.height + 17);
 
   drawMixedAxisText(ctx, [
     { text: "频率 ", font: "800 12px sans-serif" },
-    { text: "F", font: "italic 900 15px 'Times New Roman', serif" },
-    { text: " (Hz)", font: "800 12px sans-serif" },
+    { text: "f", font: "italic 900 15px 'Times New Roman', serif" },
+    { text: " / Hz", font: "800 12px sans-serif" },
   ], plot.x + plot.width / 2, plot.y + plot.height + 34);
   ctx.save();
   ctx.translate(15, plot.y + plot.height / 2);
   ctx.rotate(-Math.PI / 2);
   drawMixedAxisText(ctx, [
-    { text: "振幅 ", font: "800 12px sans-serif" },
-    { text: "A", font: "italic 900 15px 'Times New Roman', serif" },
-    { text: " (cm)", font: "800 12px sans-serif" },
+    { text: "光斑振动幅度 ", font: "800 12px sans-serif" },
+    { text: "Δy", font: "italic 900 15px 'Times New Roman', serif" },
+    { text: " / cm", font: "800 12px sans-serif" },
   ], 0, 0);
   ctx.restore();
   ctx.restore();
@@ -888,9 +909,6 @@ function bindEvents() {
     finishCalibration();
   });
 
-  els.amplitudeRecord.addEventListener("click", () => recordSnapshot(false));
-  els.syncRecord.addEventListener("click", toggleSyncRecording);
-  els.clearData.addEventListener("click", clearData);
   els.drawChart.addEventListener("click", drawChart);
   window.addEventListener("resize", scheduleCanvasResize);
   els.video.addEventListener("loadedmetadata", scheduleCanvasResize);
