@@ -1,0 +1,10 @@
+index,frequency_hz,spot_displacement_range_cm,elapsed_time_s,data_status
+1,2.0,0.083,5.0,synthetic_example
+2,3.0,0.112,10.0,synthetic_example
+3,4.0,0.168,15.0,synthetic_example
+4,5.0,0.286,20.0,synthetic_example
+5,6.0,0.431,25.0,synthetic_example
+6,7.0,0.317,30.0,synthetic_example
+7,8.0,0.204,35.0,synthetic_example
+8,9.0,0.139,40.0,synthetic_example
+9,10.0,0.101,45.0,synthetic_example
