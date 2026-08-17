@@ -1,0 +1,273 @@
+{
+  "backend": "compare",
+  "source_project_sha": "7f0d91cc73afafaecc54acc46b2b9d69375d994a",
+  "library_release": "v0.6.0",
+  "library_sensor": "tracker.spot-centroid@0.4.0",
+  "fixture_kind": "synthetic-downstream-replay",
+  "cases": [
+    "normal",
+    "horizontal",
+    "vertical",
+    "intensity",
+    "blank",
+    "roi-edge",
+    "overexposed"
+  ],
+  "results": [
+    {
+      "locked": true,
+      "x": 80.0,
+      "y": 60.0,
+      "radius": 14.142135623730951,
+      "weight_sum": 64985.0
+    },
+    {
+      "locked": true,
+      "x": 112.0,
+      "y": 60.0,
+      "radius": 14.142135623730951,
+      "weight_sum": 64985.0
+    },
+    {
+      "locked": true,
+      "x": 80.0,
+      "y": 88.0,
+      "radius": 14.142135623730951,
+      "weight_sum": 64985.0
+    },
+    {
+      "locked": true,
+      "x": 80.0,
+      "y": 60.0,
+      "radius": 14.142135623730951,
+      "weight_sum": 33284.99999999999
+    },
+    {
+      "locked": false,
+      "x": null,
+      "y": null,
+      "radius": null,
+      "weight_sum": 0.0
+    },
+    {
+      "locked": true,
+      "x": 5.13939393939394,
+      "y": 60.0,
+      "radius": 10.0,
+      "weight_sum": 33825.0
+    },
+    {
+      "locked": true,
+      "x": 80.0,
+      "y": 60.0,
+      "radius": 14.142135623730951,
+      "weight_sum": 80835.0
+    }
+  ],
+  "derived": {
+    "locked_samples": 3,
+    "spot_displacement_range_px": 28.0,
+    "spot_displacement_range_cm": 0.56
+  },
+  "comparison": {
+    "pass": true,
+    "tolerance_px": 1e-09,
+    "maximum_absolute_error": 7.105427357601002e-15,
+    "frames": [
+      {
+        "frame_id": "normal",
+        "sequence": 0,
+        "legacy": {
+          "locked": true,
+          "x": 80.0,
+          "y": 60.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 64985.0
+        },
+        "library": {
+          "locked": true,
+          "x": 80.0,
+          "y": 60.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 64985.0
+        },
+        "delta": {
+          "detected_match": true,
+          "x_px": 0.0,
+          "y_px": 0.0,
+          "radius_px": 0.0,
+          "weight_sum": 0.0
+        },
+        "match": true
+      },
+      {
+        "frame_id": "horizontal",
+        "sequence": 1,
+        "legacy": {
+          "locked": true,
+          "x": 112.0,
+          "y": 60.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 64985.0
+        },
+        "library": {
+          "locked": true,
+          "x": 112.0,
+          "y": 60.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 64985.0
+        },
+        "delta": {
+          "detected_match": true,
+          "x_px": 0.0,
+          "y_px": 0.0,
+          "radius_px": 0.0,
+          "weight_sum": 0.0
+        },
+        "match": true
+      },
+      {
+        "frame_id": "vertical",
+        "sequence": 2,
+        "legacy": {
+          "locked": true,
+          "x": 80.0,
+          "y": 88.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 64985.0
+        },
+        "library": {
+          "locked": true,
+          "x": 80.0,
+          "y": 88.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 64985.0
+        },
+        "delta": {
+          "detected_match": true,
+          "x_px": 0.0,
+          "y_px": 0.0,
+          "radius_px": 0.0,
+          "weight_sum": 0.0
+        },
+        "match": true
+      },
+      {
+        "frame_id": "intensity",
+        "sequence": 3,
+        "legacy": {
+          "locked": true,
+          "x": 80.0,
+          "y": 60.00000000000001,
+          "radius": 14.142135623730951,
+          "weight_sum": 33284.99999999999
+        },
+        "library": {
+          "locked": true,
+          "x": 80.0,
+          "y": 60.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 33284.99999999999
+        },
+        "delta": {
+          "detected_match": true,
+          "x_px": 0.0,
+          "y_px": 7.105427357601002e-15,
+          "radius_px": 0.0,
+          "weight_sum": 0.0
+        },
+        "match": true
+      },
+      {
+        "frame_id": "blank",
+        "sequence": 4,
+        "legacy": {
+          "locked": false,
+          "x": null,
+          "y": null,
+          "radius": null,
+          "weight_sum": 0.0
+        },
+        "library": {
+          "locked": false,
+          "x": null,
+          "y": null,
+          "radius": null,
+          "weight_sum": 0.0
+        },
+        "delta": {
+          "detected_match": true,
+          "x_px": 0.0,
+          "y_px": 0.0,
+          "radius_px": 0.0,
+          "weight_sum": 0.0
+        },
+        "match": true
+      },
+      {
+        "frame_id": "roi-edge",
+        "sequence": 5,
+        "legacy": {
+          "locked": true,
+          "x": 5.13939393939394,
+          "y": 60.0,
+          "radius": 10.0,
+          "weight_sum": 33825.0
+        },
+        "library": {
+          "locked": true,
+          "x": 5.13939393939394,
+          "y": 60.0,
+          "radius": 10.0,
+          "weight_sum": 33825.0
+        },
+        "delta": {
+          "detected_match": true,
+          "x_px": 0.0,
+          "y_px": 0.0,
+          "radius_px": 0.0,
+          "weight_sum": 0.0
+        },
+        "match": true
+      },
+      {
+        "frame_id": "overexposed",
+        "sequence": 6,
+        "legacy": {
+          "locked": true,
+          "x": 80.0,
+          "y": 60.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 80835.0
+        },
+        "library": {
+          "locked": true,
+          "x": 80.0,
+          "y": 60.0,
+          "radius": 14.142135623730951,
+          "weight_sum": 80835.0
+        },
+        "delta": {
+          "detected_match": true,
+          "x_px": 0.0,
+          "y_px": 0.0,
+          "radius_px": 0.0,
+          "weight_sum": 0.0
+        },
+        "match": true
+      }
+    ]
+  },
+  "legacy_derived": {
+    "locked_samples": 3,
+    "spot_displacement_range_px": 28.0,
+    "spot_displacement_range_cm": 0.56
+  },
+  "library_derived": {
+    "locked_samples": 3,
+    "spot_displacement_range_px": 28.0,
+    "spot_displacement_range_cm": 0.56
+  },
+  "derived_match": true,
+  "duration_ms": 228.21591701358557
+}
