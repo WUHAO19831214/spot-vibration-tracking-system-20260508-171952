@@ -1,0 +1,4 @@
+__pycache__/
+*.py[cod]
+.venv*/
+integration/spot_sensor/results/

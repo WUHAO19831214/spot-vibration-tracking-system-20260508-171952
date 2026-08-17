@@ -1,0 +1,1 @@
+physics-software-sensors[classical-trackers] @ https://github.com/WUHAO19831214/physics-software-sensors/releases/download/v0.6.0/physics_software_sensors-0.5.0-py3-none-any.whl#sha256=191258d71e036d5f7b9b2ef3b43c2a70d6a6058af984ce65ea39ddb23db573c9

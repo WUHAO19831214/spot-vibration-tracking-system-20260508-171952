@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Deterministic project-owned replay definitions; these are synthetic integration fixtures, not captured experiment data.",
+  "frame": {"width": 160, "height": 120, "background_bgr": [15, 15, 15]},
+  "cases": [
+    {"id": "normal", "spot": {"x": 80, "y": 60, "radius": 10, "bgr": [20, 30, 230]}},
+    {"id": "horizontal", "spot": {"x": 112, "y": 60, "radius": 10, "bgr": [20, 30, 230]}},
+    {"id": "vertical", "spot": {"x": 80, "y": 88, "radius": 10, "bgr": [20, 30, 230]}},
+    {"id": "intensity", "spot": {"x": 80, "y": 60, "radius": 10, "bgr": [45, 55, 155]}},
+    {"id": "blank", "spot": null},
+    {"id": "roi-edge", "spot": {"x": 4, "y": 60, "radius": 8, "bgr": [20, 30, 230]}},
+    {"id": "overexposed", "spot": {"x": 80, "y": 60, "radius": 10, "bgr": [0, 0, 255]}}
+  ],
+  "derived_sequence": ["normal", "vertical", "horizontal"],
+  "cm_per_pixel": 0.02,
+  "centroid_tolerance_px": 1e-9
+}

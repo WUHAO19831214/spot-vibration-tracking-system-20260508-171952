@@ -81,6 +81,10 @@ cm_per_pixel = 1 / L_pixel
 
 ## 如何运行
 
+### 可选的软件传感器复用验证
+
+仓库保留现有浏览器算法为默认运行路径，并新增一个不接管实时 UI 的离线回放适配器。它从公开且固定的 `physics-software-sensors` `v0.6.0` wheel 调用 `tracker.spot-centroid`，支持 `legacy`、`library`、`compare` 三种模式；同帧比较、依赖锁定、测试方法和回滚步骤见 [集成说明](integration/spot_sensor/README.md)。该验证使用合成回放帧，不构成真实摄像头或物理计量证据。
+
 ### 在线运行
 
 打开在线演示并允许摄像头权限。摄像头访问要求 HTTPS 或 localhost 安全上下文。
