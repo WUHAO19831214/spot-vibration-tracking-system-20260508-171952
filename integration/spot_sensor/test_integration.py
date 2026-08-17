@@ -20,6 +20,10 @@ class SpotSensorIntegrationTest(unittest.TestCase):
             report["comparison"]["maximum_absolute_error"],
             report["comparison"]["tolerance_px"],
         )
+        self.assertEqual(report["comparison"]["frames"][0]["frame_id"], "normal")
+        self.assertIn("legacy", report["comparison"]["frames"][0])
+        self.assertIn("library", report["comparison"]["frames"][0])
+        self.assertIn("delta", report["comparison"]["frames"][0])
         self.assertTrue(report["derived_match"])
 
     def test_blank_is_explicitly_lost(self) -> None:

@@ -148,7 +148,9 @@ def derived_quantities(results: list[dict[str, Any]], cm_per_pixel: float) -> di
     }
 
 
-def compare_results(legacy: list[dict[str, Any]], library: list[dict[str, Any]], tolerance: float) -> dict[str, Any]:
+def compare_results(
+    case_ids: list[str], legacy: list[dict[str, Any]], library: list[dict[str, Any]], tolerance: float
+) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     maximum_error = 0.0
     all_match = True
@@ -164,7 +166,22 @@ def compare_results(legacy: list[dict[str, Any]], library: list[dict[str, Any]],
             maximum_error = max(maximum_error, error)
         row_match = locked_match and all(error <= tolerance for error in errors.values())
         all_match = all_match and row_match
-        rows.append({"sequence": index, "match": row_match, "locked_match": locked_match, "absolute_errors": errors})
+        rows.append(
+            {
+                "frame_id": case_ids[index],
+                "sequence": index,
+                "legacy": old,
+                "library": new,
+                "delta": {
+                    "detected_match": locked_match,
+                    "x_px": errors["x"],
+                    "y_px": errors["y"],
+                    "radius_px": errors["radius"],
+                    "weight_sum": errors["weight_sum"],
+                },
+                "match": row_match,
+            }
+        )
     return {"pass": all_match, "tolerance_px": tolerance, "maximum_absolute_error": maximum_error, "frames": rows}
 
 
@@ -190,7 +207,9 @@ async def run(backend: str) -> dict[str, Any]:
     report["derived"] = derived_quantities([active[index] for index in selected], float(spec["cm_per_pixel"]))
     if backend == "compare":
         assert old is not None and new is not None
-        report["comparison"] = compare_results(old, new, float(spec["centroid_tolerance_px"]))
+        report["comparison"] = compare_results(
+            [case["id"] for case in cases], old, new, float(spec["centroid_tolerance_px"])
+        )
         report["legacy_derived"] = derived_quantities([old[index] for index in selected], float(spec["cm_per_pixel"]))
         report["library_derived"] = derived_quantities([new[index] for index in selected], float(spec["cm_per_pixel"]))
         report["derived_match"] = report["legacy_derived"] == report["library_derived"]
